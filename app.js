@@ -46,7 +46,7 @@ app.use(cors({
 
 // configuracion mongose //
 const mongoose = require("mongoose")
-mongoose.connect("mongodb://127.0.0.1:27017/" + config.bd).then(
+mongoose.connect("mongodb://172.18.0.2:27017/" + config.bd).then(
     () => console.log("connected")
 )
 
