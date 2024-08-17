@@ -3,7 +3,7 @@ let config = {}
 config.puerto = 3000
 config.bd = "pruebaibero04"
 config.origin = [
-    "http://localhost:4200"
+    "http://18.116.35.124:4200"
 ]
 config.passgmail = "jejpiyehptyvnqoq"
 config.usergmail = "malbanvasquez21072006@gmail.com"
