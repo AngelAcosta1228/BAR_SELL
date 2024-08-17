@@ -56,12 +56,12 @@ usuariosModel.crear = function(post,callback) {
 }
 usuariosModel.listar = function (post, callback) { 
     myModel.find({}, {password:0}).then((respuesta) => {
-        return callback({state: true, data: respuesta})
+        return callback({state: true, usuarios: respuesta})
     })
 }
 usuariosModel.listarid = function (post, callback) { 
     myModel.find({_id:post._id}, {password:0}).then((respuesta) => {
-        return callback({state: true, data: respuesta})
+        return callback({state: true, usuarios: respuesta})
     })
 }
 usuariosModel.update = function(post, callback) {
@@ -93,14 +93,8 @@ usuariosModel.activar = function(post, callback) {
 }
 usuariosModel.actualizardatos = function(post, callback) {
 
-    myModel.updateOne({_id:post._id},{
-        nombre:post.nombre,
-        telefono:post.telefono, 
-        direccion:post.direccion,
-        ciudad:post.ciudad,
-        
-
-    }).then((respuesta) => {
+    myModel.updateOne({_id:post._id, password:post.password, confirmpassword:post.confirmpassword},{}
+    ).then((respuesta) => {
         console.log(respuesta)
         return callback({state:true})
     }).catch((error) => {
@@ -126,7 +120,7 @@ usuariosModel.login = function (post, callback) {
     }
     , {nombre: 1, estado: 1, rol:1 }).then((respuesta) => {
         
-        return callback({state: true, data: respuesta})
+        return callback({state: true, usuarios: respuesta})
     }) 
     .catch((error) => {
         console.log(error)

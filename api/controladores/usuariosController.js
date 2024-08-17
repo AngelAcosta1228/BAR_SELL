@@ -268,7 +268,7 @@ usuariosController.delete = function(request, response) {
 };
 usuariosController.login = function(request, response) {
 
-    // console.log(respuesta.data.length)
+    // console.log(respuesta.usuarios.length)
 
     let post = { 
         email: request.body.email,
@@ -285,23 +285,23 @@ usuariosController.login = function(request, response) {
     post.password = sha256(post.password + config.passsha256)
 
     usuariosModel.login(post, function(respuesta) {
-        // console.log(respuesta.data.length)
+        // console.log(respuesta.usuarios.length)
         if (respuesta.state == true){
-            if(respuesta.data[0].length == 0){
+            if(respuesta.usuarios[0].length == 0){
                 response.json({state: false, mensaje: "Error en las credenciales de acceso"})
             } else {
-                if(respuesta.data[0].estado == 0){
+                if(respuesta.usuarios[0].estado == 0){
                     response.json({ state: false, mensaje: "Su cuenta no ha sido activada, verifica tu correo"})
                 }
                 else{
-                    request.session.rol = respuesta.data[0].rol
-                    request.session.nombre = respuesta.data[0].nombre
-                    request.session._id = respuesta.data[0]._id
-                    request.session.direccion = respuesta.data[0].direccion
-                    request.session.ciudad = respuesta.data[0].ciudad
-                    request.session.telefono = respuesta.data[0].telefono
+                    request.session.rol = respuesta.usuarios[0].rol
+                    request.session.nombre = respuesta.usuarios[0].nombre
+                    request.session._id = respuesta.usuarios[0]._id
+                    request.session.direccion = respuesta.usuarios[0].direccion
+                    request.session.ciudad = respuesta.usuarios[0].ciudad
+                    request.session.telefono = respuesta.usuarios[0].telefono
 
-                    response.json({state: true, mensaje: "Bienvenido " + respuesta.data[0].nombre })
+                    response.json({state: true, mensaje: "Bienvenido " + respuesta.usuarios[0].nombre })
                 }
             }
         } else {
@@ -315,64 +315,38 @@ usuariosController.misdatos = function(request, response) {
     let post = { 
         _id:request.session._id,
     }
-
-    // if (!post._id) {
-    //     return response.json({ state: false, mensaje: "el campo id es obligatorio", campo: "_id" });
-    // }
-
     usuariosModel.listarid(post, function(respuesta) {
         response.json(respuesta);
     });
 };
 usuariosController.actualizardatos = function(request, response) {
-    let post = { 
+    var post = { 
         _id:request.session._id,
         password:request.body.password,
-        nombre:request.body.nombre,
-        telefono:request.body.telefono, 
-        direccion:request.body.direccion,
-        ciudad:request.body.ciudad,
+        confirmpassword:request.body.confirmpassword
         
     }
-    function isValidPassword(password) {
-        // Regular expression to check the password criteria
-        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
-        return passwordRegex.test(password);
-      }
-
-      if (!isValidPassword(password)) {
-        return respose.json({ mensaje: 'Contraseña no cumple con los criterios, debe contener 1 simbolo 1 mayuzcula y 8 digitos'  });
+    if (post.password == undefined || post.password == null || post.password == "") {
+        return response.json({ state: false, mensaje: "el campo password es obligatorio", campo: "password" });
     }
-     // Validar email
-     if (!post.email) {
-        return response.json({ state: false, mensaje: "el campo email es obligatorio", campo: "email" });
+    if(post.password.length < 7 ){
+        response.json({state: false, mensaje: "el campo password debe tener minimo 7 caracteres", campo:"password"})
+        return false
+    }
+    if(post.password.length > 15 ){
+        response.json({state: false, mensaje: "el campo password debe tener maximo 10 caracteres", campo:"password"})
+        return false
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-    if (!emailRegex.test(post.email)) {
-        return response.json({ state: false, mensaje: 'Invalid email format.' });
-    }
-     //validar telefono
-     if (!post.telefono) {
-        return response.json({ state: false, mensaje: "el campo telefono es obligatorio", campo: "telefono" });
-    }
-     //validar direccion
-     if (!post.direccion) {
-        return response.json({ state: false, mensaje: "el campo direccion es obligatorio", campo: "direccion" });
-    }
-
-    post.password = sha256(post.password + config.passsha256)
-
+    post.password = sha256(post.password + config.passwordsha256)
     usuariosModel.actualizardatos(post, function(respuesta) {
         if (respuesta.state == true) {
-            response.json({ state: true, mensaje: "Se actualizaron los datos correctamente" });
+            response.json({ state: true, mensaje: "se actualizo el elemento correctamente" });
         } else {
-            response.json({ state: false, mensaje: "Se presento un error al actualizar los datos", error: respuesta });
+            response.json({ state: false, mensaje: "se presento un error al actualizar el elemento", error: respuesta });
         }
     });
-};
+}
 usuariosController.activar = function(request, response) {
     var post = { 
         email:request.body.email,
